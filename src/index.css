@@ -1,13 +1,44 @@
-body {
+* {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+body {
+  font-family: 'Nunito', sans-serif;
+  background: #fdf6ff;
+  color: #4a4063;
+  -webkit-font-smoothing: antialiased;
 }
+
+:root {
+  --pink: #f9a8d4;
+  --pink-light: #fce7f3;
+  --pink-dark: #ec4899;
+  --lavender: #c4b5fd;
+  --lavender-light: #ede9fe;
+  --lavender-dark: #7c3aed;
+  --peach: #fdba74;
+  --peach-light: #ffedd5;
+  --peach-dark: #ea580c;
+  --mint: #6ee7b7;
+  --mint-light: #d1fae5;
+  --mint-dark: #059669;
+  --blue: #93c5fd;
+  --blue-light: #dbeafe;
+  --blue-dark: #2563eb;
+  --yellow: #fde68a;
+  --yellow-light: #fef9c3;
+  --text: #4a4063;
+  --text-light: #9ca3af;
+  --white: #ffffff;
+  --bg: #fdf6ff;
+  --card: #ffffff;
+  --border: #f3e8ff;
+  --sidebar-width: 240px;
+  --nav-height: 64px;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--lavender); border-radius: 10px; }
