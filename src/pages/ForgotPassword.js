@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
+import emailjs from '@emailjs/browser';
+
+const EMAILJS_SERVICE = 'service_0894o7z';
+const EMAILJS_TEMPLATE = 'template_qw0ofki';
+const EMAILJS_PUBLIC_KEY = 'ZS7WjL-KGSfqyLgsg';
 
 const OTP_KEY = 'slimtrack_otp';
 const USERS_KEY = 'slimtrack_users';
@@ -15,9 +20,9 @@ export default function ForgotPassword({ onBack }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [generatedOtp, setGeneratedOtp] = useState('');
 
-  const handleSendOtp = (e) => {
+
+  const handleSendOtp = async (e) => {
     e.preventDefault();
     setError('');
     const users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
@@ -28,12 +33,16 @@ export default function ForgotPassword({ onBack }) {
     setLoading(true);
     const code = String(Math.floor(100000 + Math.random() * 900000));
     localStorage.setItem(OTP_KEY, JSON.stringify({ email, code, expires: Date.now() + 5 * 60 * 1000 }));
-    setGeneratedOtp(code);
-    setTimeout(() => {
-      setSuccess(`OTP generated! (No email server — your OTP is: ${code})`);
+    try {
+      await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, { to_email: email, otp: code }, EMAILJS_PUBLIC_KEY);
+      setSuccess('OTP sent to your email! Check your inbox.');
       setStep(2);
+    } catch {
+      setError('Failed to send OTP email. Please try again.');
+      localStorage.removeItem(OTP_KEY);
+    } finally {
       setLoading(false);
-    }, 600);
+    }
   };
 
   const handleVerifyOtp = (e) => {
@@ -104,14 +113,14 @@ export default function ForgotPassword({ onBack }) {
             <div style={{ textAlign: 'center', marginBottom: 8 }}>
               <div style={{ fontSize: 32, marginBottom: 8 }}>📧</div>
               <div style={{ fontSize: 15, fontWeight: 700, color: '#4a4063' }}>Enter your email</div>
-              <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 4 }}>We'll generate an OTP for you</div>
+              <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 4 }}>We'll send an OTP to your email</div>
             </div>
             <div>
               <label style={labelStyle}>Email Address</label>
               <input type="email" placeholder="you@email.com" value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} required />
             </div>
             {error && <div style={errorStyle}>⚠️ {error}</div>}
-            <button type="submit" disabled={loading} style={btnStyle}>{loading ? 'Generating...' : 'Get OTP 📧'}</button>
+            <button type="submit" disabled={loading} style={btnStyle}>{loading ? 'Sending...' : 'Send OTP 📧'}</button>
           </motion.form>
         )}
 
@@ -128,11 +137,6 @@ export default function ForgotPassword({ onBack }) {
                 ✅ {success}
               </div>
             )}
-            {generatedOtp && (
-              <div style={{ background: theme.primaryLight, borderRadius: 10, padding: '10px 14px', fontSize: 13, color: theme.primary, fontWeight: 700, textAlign: 'center' }}>
-                Your OTP: <span style={{ fontSize: 22, letterSpacing: 4 }}>{generatedOtp}</span>
-              </div>
-            )}
             <div>
               <label style={labelStyle}>6-Digit OTP</label>
               <input type="text" placeholder="123456" maxLength={6} value={otp}
@@ -141,7 +145,7 @@ export default function ForgotPassword({ onBack }) {
             </div>
             {error && <div style={errorStyle}>⚠️ {error}</div>}
             <button type="submit" style={btnStyle}>Verify OTP ✓</button>
-            <button type="button" onClick={() => { setStep(1); setError(''); setSuccess(''); setGeneratedOtp(''); }}
+            <button type="button" onClick={() => { setStep(1); setError(''); setSuccess(''); }}
               style={{ ...btnStyle, background: theme.secondaryLight, color: theme.secondary }}>← Back</button>
           </motion.form>
         )}
